@@ -1,0 +1,69 @@
+---
+title: "Biotic and Abiotic Effects on Cricket Chirp Rate"
+subtitle: "Mini Project 1 - Olive Lucanish"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+
+```{r include=FALSE}
+library(tidyverse)
+library(tinytex)
+library(modeldata)
+library(knitr)
+crickets
+```
+
+# Introduction
+The crickets is a data set from the model data package that was downloaded into R studio. This data set tracks two cricket species , O. exclamationis and O. niveus.The data tracks the rate of chirps from each cricket along with the temperature the crickets were kept at. In this review I will look at the biotic and the abiotic variables on the crickets chirp rate. The variables in the data set are 
+
+
+1. Abiotic - Species of Cricket
+1. Biotic - Temperature of Enclosure
+1. Dependent Variable - Rate of Chirps
+
+I hypothesis that chirp rate is dependent on both species and temperature. 
+
+## Graph 1
+
+```{r}
+ggplot(crickets, aes( x = temp,
+                       y = rate, 
+                      color = species)) +
+  geom_point() +
+  labs(x = "Temperature(Celcius",
+       y = "Chirp Rate",
+       title = "Rate of Chirps v Temperature")
+
+```
+
+## Graph 1 Analysis 
+
+*This scatter plot to compares the chirp rate of crickets with the temperature they were kept in. On the X axis we have temperature measured in Celcius and on the Y axis we are measuring the rate of chirps. The plots on the graph relate to the type of species data was taken on.*
+
+It is displayed in graph 1 that as temperature increases so does chirp rate. But it seems that O. Exclamation has a higher chirp rate than O. niveus. 
+
+## Graph 2
+
+```{r}
+ggplot(crickets, aes(x = species,
+                     y = rate,
+                     fill = species))+
+  geom_boxplot(show.legend =  FALSE) +
+labs(x = "Species",
+       y = "Chirp Rate",
+       title = "Rate of Cricket Chirps per Species")
+```
+
+## Graph 2 Analysis
+*This box plot shows the relationship between chirp rate and species. On the X axis there are the two species. O. exclamationis and O. nivues. On the Y axis we see the chirp rate.*
+
+Looking at graph 2 we can see that O. exclamationis has a higher chirp rate than O. niveus.
+
+# Concluding Thoughts
+
+My hypothesis stating that chirp rate is species dependent and increased by temperature was proven true. Graphs displayed positive correlation between chirp rate and temperature. It was also shown that one species has a higher chirp rate than the other. In the future it would be interesting to look at other biotic and abiotic variables and their effects on chirp rate.
+  
