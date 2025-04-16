@@ -1,0 +1,140 @@
+---
+title: "Say Aloe to My Little Friend"
+subtitle: "A tutorial on wrangling data using the PlantGrowth data set"
+author: "Olive Lucanish"
+date: "2025-04-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tinytex)
+library(datasets)
+```
+
+# Introduction
+In this tutorial I hope to teach you how to wrangle the Plant Growth data set. We will learn to add new column, move columns around, pivot the dataset, and make a box plot!!
+
+*Before you get started make sure to load the "tidyverse" and "datasets" packages*
+
+In the "PlantGrowth" data set there are ten trials per soil treatments. After the growing period, in the respective soil treatments, each plant was weighted (in grams) and written into this data set. It is now our job to make sense of this data.
+
+This data set is measuring plant growth in three different soil treatments.
+
+1. Control
+1. Treatment 1
+1. Treatment 2
+
+
+
+## Part 1: Addressing Whats Wrong
+Lets get started!!
+First load the code chunk below to get to know your data set.
+
+
+```{r}
+PlantGrowth
+```
+When looking at this data set we can see it is a mess. Below list all the things wrong with this data set. 
+
+**Hint! There are 2 things**
+
+Answer:
+
+## Part 2: Adding a Column
+To start cleaning this data up lets start by adding a new column, numbering the plants 1-10 per each trial. Fill in the blanks in the Code below and uncomment it before running. We are going to name this plant_number_growth
+
+```{r}
+#plant_number_growth <-PlantGrowth %>% 
+  #group_by(___) %>% 
+ # mutate(___ = ___())
+#plant_number_growth
+```
+When running your code you should get something like this!
+```{r echo=FALSE}
+plant_number_growth <-PlantGrowth %>% 
+  group_by(group) %>% 
+  mutate(plant_number = row_number())
+plant_number_growth
+```
+
+## Part 3: Rearranging our Columns
+Now we should move the plant_number column up to the front of the data set. Fill in the code below. We will name this data set plant_growth_clean.
+
+```{r}
+#plant_growth_clean <-plant_number_growth %>% 
+ # relocate(___)
+#plant_growth_clean
+```
+We should get sommething like this!
+```{r echo=FALSE}
+plant_growth_clean <-plant_number_growth %>% 
+  relocate(plant_number)
+plant_growth_clean
+```
+## Part 3: Pivotting Our Data
+
+Finally we need to pivot our data set. Should we pivot this data set longer or wider?
+
+Answer:
+
+Now you try!
+
+Fill in the code chunk below! We will name this plant_growth_pivot
+
+```{r}
+#plant_growth_pivot <- plant_growth_clean %>% 
+  #pivot_---(
+   # names_from = ___,
+    #values_from = ___)
+#plant_growth_pivot
+```
+It should look like this!
+```{r echo=FALSE}
+plant_growth_pivot <- plant_growth_clean %>% 
+  pivot_wider(
+    names_from = group,
+    values_from = weight)
+plant_growth_pivot
+```
+## Part 4: Making a Box Plot
+Going back to plant_growth_clean lets make a box plot. Fill in the blanks in the code chunk below.
+
+```{r}
+#plant_growth_clean %>% 
+#ggplot(aes(x = ___, y = ___)) +
+  #geom_boxplot()+
+   #labs(title = "___", subtitle = "___", x = "___", y = "___")
+```
+Your box plot should look something like this.
+**Don't forget to add nice lables**
+```{r echo=FALSE}
+plant_growth_clean %>% 
+ggplot(aes(x = group, y = weight)) +
+  geom_boxplot()+
+   labs(title = "Plant Growth", subtitle = "Average weight in three different soil treatments", x = "Treatment", y = "Weight(g)")
+```
+
+What does this box plot show you?
+
+Answer:
+
+## Part 5: Conlusion
+
+Congrats!!!
+
+You now know the basics of wrangling data. Before we conclude lets recap what we have learned. 
+
+### Skills we learned
+
+1. How to print and analyze your new data set!
+1.  How to add a new column into your data set and set the values we want!
+1. How to relocate a column in your data set!
+1. How to your data set longer pivot wider 
+1. How to make a box plot and analyze it!
+    1. Our box plot showed us that treatment 1 have the lowest median while treatment 2       has the highest
+    1. Treatment 1 has two out liars near the max weight
+    1. Control treatment has the largest range
+    1. Control and treatment 1 are right skewed
+    1. Treatment 2 is left skewed
