@@ -24,3 +24,8 @@ Expected Gracuation: 2025
   - Say Aloe to my little friend!
   - This project looks at the effects of soil treatments on plant growth.
   - [Project 2](https://github.com/OliveLucanish/Portfolio2025/blob/main/project2.Rmd)
+
+## Project 3: Final
+  - Effects of age on the rate of spontaneous abortions.
+  - This project looks at the effects of age on the rate of spontaneous abortions.
+  - [Project 3:Final](Final_project.Rmd)
