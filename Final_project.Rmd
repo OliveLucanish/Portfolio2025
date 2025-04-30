@@ -1,6 +1,6 @@
 ---
 title: "Effects of age on Abortions"
-subtitle: "Comparing induced and spontaneous abortions"
+subtitle: "Analysis of age on the rate of spontaneous abortions"
 author: "Olive Lucanish"
 date: "2025-04-29"
 output: html_document
