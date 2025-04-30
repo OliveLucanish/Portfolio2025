@@ -1,0 +1,127 @@
+---
+title: "Effects of age on Abortions"
+subtitle: "Comparing induced and spontaneous abortions"
+author: "Olive Lucanish"
+date: "2025-04-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(datasets)
+library(tinytex)
+library(openintro)
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(pROC)
+library(randomForest)
+infert
+```
+
+# Introduction
+This project will cover the infert data set from the datasets package avalible in R. I will be discussing the topic of abortion, spontaneous and induced. This dataset was collected by Trichopoulos in 1976. Throughout this project I will be looking into the effects of age on spontaneous and induced abortions. I will mainly be focusing on spontaneous abortions and using this data to see if the rate of spontaneous abortions increases with age. For the purposes of this project we will define a spontaneous abortion as a miscarriage. 
+
+# Wrangling the Data
+```{r include=FALSE}
+infert_clean_plot <- infert %>%
+  select(age, parity, induced, spontaneous) %>%
+  mutate(total_abortions = induced + spontaneous,
+         healthy_births = parity - total_abortions) %>%
+  arrange(desc(age)) %>%
+  summarize(total_abortions = sum(total_abortions),
+            healthy_births = sum(healthy_births),
+            parity = sum(parity),
+            induced = sum(induced),
+            spontaneous = sum(spontaneous),
+            .by = age
+            ) %>%
+  rename(abortion_type_induced = induced,
+         abortion_type_spontaneous = spontaneous)
+
+infert_clean_plot
+
+```
+
+```{r include=FALSE}
+infert_clean_long <- infert %>% 
+   rename(abortion_type_induced = induced,
+         abortion_type_spontaneous = spontaneous) %>% 
+  pivot_longer(
+    cols = starts_with("abortion_type"),
+    names_to = "abortion_type",
+    values_to = "count",
+    names_prefix = "abortion_type_"
+  ) %>% 
+  mutate(abortion_fct = factor(abortion_type))
+# select(-abortion_type)
+infert_clean_long
+```
+To wrangle this data I begun by selecting the columns in the dataset that give relevent data for answering my question. I them pivotted the dataset longer in order to get the type of abortion in a single column. Once pivotting longer I had to turn the abortion_type column into a factor, this allows me make graphs to vizualize my data later.
+
+# Modeling my Data
+
+To create a model for my data I made a decision tree to find the peak in spontaneous abortion is based on age.
+
+```{r include=FALSE}
+set.seed(87)
+train_indexes <- as.vector(createDataPartition(infert_clean_long$abortion_fct, p = 0.80, list = FALSE))
+infert_clean_long_train <- slice(infert_clean_long, train_indexes)
+infert_clean_long_test <- slice(infert_clean_long, -train_indexes)
+```
+
+```{r include=FALSE}
+infert_model <- randomForest(abortion_fct ~ ., data = infert_clean_long_train)
+
+abortion_type_tree1 <- rpart(
+  abortion_fct ~ age,
+  data = infert_clean_long_train,
+  method = "class"
+  )
+
+```
+
+```{r echo=FALSE, message=FALSE}
+rpart.plot(
+  abortion_type_tree1,
+  type = 5,
+  extra = 104,
+  fallen.leaves = TRUE,
+  box.palette = "auto"
+)
+
+```
+
+Making this tree I am able to deduce that largest peak in spontaneous abortions occurs in the age range of less than 40 years old. At this range there is a 43% chance of spontaneous abortion for people of all ages.
+
+```{r echo=FALSE, message=FALSE}
+predicted_probs <- predict(abortion_type_tree1, newdata = infert_clean_long_test, type = "prob")
+
+
+roc_obj <- roc(infert_clean_long_test$abortion_type, predicted_probs[, "spontaneous"])
+plot(roc_obj, main = "ROC curve for decision tree", print.thres = "all", print.auc = TRUE, print.thres.cex = 0.7)
+auc(roc_obj)
+```
+
+Once creating a decision tree I plotted out a ROC, allowing to see the sensitivity of the test. From this we can see that our AUC is 0.354 which is below the random classifier. This indicates that our model is worse than random. 
+
+# Data Visualization 
+```{r echo=FALSE, message=FALSE}
+infert_clean_spontaneous <- infert_clean_plot%>% 
+  select(age, parity, abortion_type_spontaneous)
+
+
+infert_clean_spontaneous %>% 
+  ggplot(mapping = aes(x = age,
+                       y = abortion_type_spontaneous)) +
+  geom_point()+
+  geom_smooth(method = "lm")+
+  labs(title =  "Effects of age on Spontaneous abortions" , x = "Age", y = "Spontaneous Abortions")
+```
+
+To visualize this data I chose to make a scatter plot. From this scatter plot we can see there is a negative relationship between spontaneous abortions and age. There are many out liar in this graph which is attributing to the randomness of the data.
+
+# Discussion and Conclusions 
+Looking at my scatter plot I was shocked to see that there was a negative relationship between spontaneous abortions and age. I would have expected that as age increased spontaneous abortions would have increased as well. I would be curious to conduct another analysis with more current data to compare the modern pregnancies and abortions to those of 1976. I think it would also be worth while to directly compare spontaneous and induced abortions. 
+
